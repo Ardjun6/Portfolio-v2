@@ -3,23 +3,21 @@ import { Syne, DM_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const syne = Syne({ 
-  subsets: ["latin"],
+const syne = Syne({
+  subsets: ['latin'],
   variable: '--font-syne',
   display: 'swap',
 })
 
-const dmSans = DM_Sans({ 
-  subsets: ["latin"],
+const dmSans = DM_Sans({
+  subsets: ['latin'],
   variable: '--font-dm-sans',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  // Metadata for the site, including a custom generator string to credit the creator
-  title: 'Ardjun Debi Tewarie — Portfolio',
+  title: 'Ardjun Debi Tewarie - Portfolio',
   description: 'Applied Data Science & AI Student | React & Next.js Developer',
-  // Replace the default v0.app generator with a custom credit string
   generator: 'Ardjun Debi - Tewarie creator etc...',
   icons: {
     icon: [

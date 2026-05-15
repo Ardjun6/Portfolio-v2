@@ -1,593 +1,379 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Github, Linkedin, Globe, Mail, ExternalLink, ChevronDown, Briefcase, GraduationCap, Award } from "lucide-react"
+import { useEffect, useMemo, useState } from "react"
+import {
+  ArrowUpRight,
+  BriefcaseBusiness,
+  Code2,
+  Github,
+  GraduationCap,
+  Layers3,
+  Linkedin,
+  Mail,
+  MapPin,
+  MousePointer2,
+  Play,
+  Sparkles,
+} from "lucide-react"
 import { CursorFollower } from "@/components/cursor-follower"
-import { SkillConstellation } from "@/components/skill-constellation"
-import { Typewriter } from "@/components/typewriter"
-import { AnimatedCounter } from "@/components/animated-counter"
-import { FadeIn } from "@/components/fade-in"
-
-const NAV_LINKS = [
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#skills", label: "Skills" },
-  { href: "#projects", label: "Projects" },
-  { href: "#contact", label: "Contact" },
-]
-
-const PHRASES = [
-  "Full Stack Developer",
-  "Applied Data Science & AI Student",
-  "Building Websites for Businesses",
-  "Machine Learning Enthusiast",
-]
 
 const PROJECTS = [
   {
-    id: "noteflow",
     name: "NoteFlow",
-    description: "A markdown-first workspace for notes, knowledge and planning. Features FlowMode - a combined notebook and calendar for productivity.",
-    tags: ["Next.js", "React", "Docker", "Hostinger"],
-    liveUrl: "https://noteflow.ardjun6.nl",
-    githubUrl: "https://github.com/Ardjun6",
-    icon: "NF",
+    line: "Markdown notes, planning, and FlowMode for focused study sessions.",
+    href: "https://noteflow.ardjun6.nl",
+    tags: ["Next.js", "React", "Docker"],
+    accent: "from-[#00d4ff] to-[#f7ff62]",
   },
   {
-    id: "btm",
     name: "BTM Car Crew",
-    description: "A full car community platform bringing car enthusiasts together. Event listings, crew profiles, and a gallery.",
-    tags: ["Next.js", "React", "Docker", "Community", "Hostinger"],
-    liveUrl: "https://btmcarcrew.eu",
-    githubUrl: "https://github.com/Ardjun6",
-    icon: "BTM",
+    line: "A community platform for events, crew profiles, and car culture media.",
+    href: "https://btmcarcrew.eu",
+    tags: ["Next.js", "Community", "Hostinger"],
+    accent: "from-[#ff3d81] to-[#ffd166]",
   },
   {
-    id: "portfolio",
-    name: "Personal Portfolio",
-    description: "My personal portfolio website showcasing my work and skills. Deployed using Docker for containerized hosting.",
-    tags: ["Next.js", "Docker", "Tailwind CSS"],
-    liveUrl: "https://ardjun6.nl",
-    githubUrl: "https://github.com/Ardjun6",
-    icon: "AD",
+    name: "Portfolio v2",
+    line: "A personal site built to move fast, deploy cleanly, and show the work.",
+    href: "https://ardjun6.nl",
+    tags: ["Tailwind", "Docker", "Design"],
+    accent: "from-[#91f5ad] to-[#5f6cff]",
   },
 ]
 
-const CERTIFICATIONS = [
-  "GitHub Professional Certificate",
-  "Docker Foundations Certificate",
+const SKILLS = [
+  "Next.js",
+  "React",
+  "TypeScript",
+  "Docker",
   "GitHub Actions",
-  "GitHub Copilot",
+  "WordPress",
+  "Machine Learning",
+  "Data Science",
+  "AI",
+  "UX",
 ]
+
+const MOMENTS = [
+  {
+    icon: BriefcaseBusiness,
+    label: "Work",
+    title: "Software Developer",
+    detail: "Buro CITE, civil engineering web apps and internal tools.",
+    meta: "2025",
+  },
+  {
+    icon: GraduationCap,
+    label: "Study",
+    title: "Applied Data Science & AI",
+    detail: "The Hague University of Applied Sciences.",
+    meta: "2025-2029",
+  },
+  {
+    icon: Sparkles,
+    label: "Proof",
+    title: "Certified Builder",
+    detail: "GitHub Professional, Docker Foundations, Actions, and Copilot.",
+    meta: "6 certs",
+  },
+]
+
+const SECTIONS = ["Intro", "Story", "Work", "Stack", "Contact"]
 
 export default function Portfolio() {
-  const [navVisible, setNavVisible] = useState(false)
-  const [heroVisible, setHeroVisible] = useState(false)
+  const [activeSection, setActiveSection] = useState(0)
+  const year = useMemo(() => new Date().getFullYear(), [])
 
   useEffect(() => {
-    const navTimer = setTimeout(() => setNavVisible(true), 300)
-    const heroTimer = setTimeout(() => setHeroVisible(true), 500)
-    return () => {
-      clearTimeout(navTimer)
-      clearTimeout(heroTimer)
-    }
+    const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-reel-section]"))
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+
+        if (visible) {
+          setActiveSection(Number(visible.target.dataset.index ?? 0))
+        }
+      },
+      { threshold: [0.45, 0.65, 0.85] },
+    )
+
+    targets.forEach((target) => observer.observe(target))
+    return () => observer.disconnect()
   }, [])
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
+    <main className="relative min-h-screen overflow-x-hidden bg-[#080908] text-[#f8f5eb]">
       <CursorFollower />
 
-      {/* Navigation */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 px-4 py-4 bg-background/80 backdrop-blur-xl border-b border-white/5 transition-all duration-700 ease-out ${
-          navVisible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-        }`}
-      >
-        <div className="mx-auto max-w-5xl">
-          <div className="flex items-center justify-between px-6 py-2">
-            <a href="#" className="text-lg font-bold tracking-widest gradient-text" data-interactive>
-              ADT
-            </a>
-            <ul className="hidden md:flex items-center gap-8">
-              {NAV_LINKS.map((link, i) => (
-                <li 
-                  key={link.href}
-                  className="transition-all duration-500"
-                  style={{ 
-                    transitionDelay: `${i * 50 + 300}ms`,
-                    opacity: navVisible ? 1 : 0,
-                    transform: navVisible ? "translateY(0)" : "translateY(-10px)"
-                  }}
-                >
-                  <a
-                    href={link.href}
-                    data-interactive
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <a
-              href="mailto:ardjundebitewarie@outlook.com"
-              data-interactive
-              className="px-5 py-2 text-sm rounded-full bg-primary/25 border border-primary/30 text-primary hover:bg-primary/40 hover:scale-105 active:scale-95 transition-all duration-200"
-            >
-              Hire me
-            </a>
+      <div className="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(115deg,rgba(0,212,255,0.18),transparent_28%),linear-gradient(245deg,rgba(255,61,129,0.16),transparent_30%),linear-gradient(180deg,#080908_0%,#101313_44%,#080908_100%)]" />
+      <div className="noise-layer" />
+
+      <nav className="fixed left-0 right-0 top-0 z-50 px-4 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-white/10 bg-black/35 px-4 py-3 text-sm backdrop-blur-xl">
+          <a href="#intro" className="flex items-center gap-2 font-bold tracking-wide" data-interactive>
+            <span className="grid size-8 place-items-center rounded-full bg-[#f8f5eb] text-[#080908]">A</span>
+            Ardjun
+          </a>
+          <div className="hidden items-center gap-5 text-xs text-white/65 md:flex">
+            {SECTIONS.map((section, index) => (
+              <a
+                key={section}
+                href={`#${section.toLowerCase()}`}
+                className={activeSection === index ? "text-white" : "transition-colors hover:text-white"}
+                data-interactive
+              >
+                {section}
+              </a>
+            ))}
           </div>
+          <a
+            href="mailto:ardjundebitewarie@outlook.com"
+            className="inline-flex items-center gap-2 rounded-full bg-[#f8f5eb] px-4 py-2 text-xs font-bold text-[#080908] transition-transform hover:scale-105"
+            data-interactive
+          >
+            <Mail className="size-4" />
+            Hire me
+          </a>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section id="hero" className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 text-center">
-        {/* Available badge */}
-        <div 
-          className={`flex items-center gap-2 px-4 py-2 mb-8 rounded-full text-sm border border-green-500/20 bg-green-500/10 text-green-400 transition-all duration-700 ${
-            heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "0ms" }}
-        >
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          Available for freelance work
-        </div>
-
-        {/* Photo with spinning ring */}
-        <div 
-          className={`relative w-32 h-32 mb-8 transition-all duration-700 ${
-            heroVisible ? "opacity-100 scale-100" : "opacity-0 scale-90"
-          }`}
-          style={{ transitionDelay: "100ms" }}
-        >
-          <div
-            className="absolute inset-0 rounded-full"
-            style={{
-              background: "conic-gradient(from 0deg, #7c3aed, #be185d, #22d3ee, #a78bfa, #7c3aed)",
-              animation: "spin 4s linear infinite",
-            }}
+      <aside className="fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-center gap-3 md:flex">
+        {SECTIONS.map((section, index) => (
+          <a
+            key={section}
+            href={`#${section.toLowerCase()}`}
+            aria-label={section}
+            className={`h-9 w-1.5 rounded-full transition-all ${
+              activeSection === index ? "bg-[#f8f5eb]" : "bg-white/20 hover:bg-white/45"
+            }`}
+            data-interactive
           />
-          <div className="absolute inset-[3px] rounded-full bg-background overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+        ))}
+      </aside>
+
+      <section
+        id="intro"
+        data-reel-section
+        data-index="0"
+        className="reel-section grid min-h-screen place-items-center px-4 pb-14 pt-28"
+      >
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-8 lg:grid-cols-[1fr_0.78fr]">
+          <div className="relative z-10">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-white/70">
+              <span className="size-2 rounded-full bg-[#91f5ad]" />
+              Available for freelance
+            </div>
+            <h1 className="max-w-4xl text-[clamp(4rem,13vw,10.5rem)] font-black uppercase leading-[0.82] tracking-normal">
+              Build.
+              <span className="block text-[#00d4ff]">Ship.</span>
+              <span className="block text-[#ff3d81]">Repeat.</span>
+            </h1>
+            <p className="mt-7 max-w-2xl text-lg leading-8 text-white/72 md:text-xl">
+              I am Ardjun Debi Tewarie, a full stack developer and Applied Data Science & AI
+              student in The Hague. I build websites, dashboards, and useful digital tools for
+              real businesses.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#work" className="reel-button bg-[#f8f5eb] text-[#080908]" data-interactive>
+                <Play className="size-4 fill-current" />
+                See work
+              </a>
+              <a href="#contact" className="reel-button border border-white/15 bg-white/10" data-interactive>
+                <MousePointer2 className="size-4" />
+                Contact
+              </a>
+            </div>
+          </div>
+
+          <div className="reel-phone mx-auto w-full max-w-[390px]">
+            <div className="absolute left-5 top-5 z-20 flex items-center gap-2 rounded-full bg-black/45 px-3 py-2 text-xs backdrop-blur-md">
+              <span className="size-2 rounded-full bg-[#ff3d81]" />
+              Portfolio reel
+            </div>
             <img
               src="https://avatars.githubusercontent.com/u/121283909?v=4"
               alt="Ardjun Debi Tewarie"
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
+            <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black via-black/50 to-transparent p-5 pt-28">
+              <div className="mb-3 flex items-center gap-2 text-xs text-white/70">
+                <MapPin className="size-4" />
+                The Hague, Netherlands
+              </div>
+              <div className="text-3xl font-black leading-none">Ardjun Debi Tewarie</div>
+              <div className="mt-3 text-sm text-white/70">Full Stack Developer / AI Student</div>
+            </div>
           </div>
         </div>
-
-        {/* Location */}
-        <p 
-          className={`text-sm text-muted-foreground mb-2 tracking-wide transition-all duration-700 ${
-            heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "200ms" }}
-        >
-          The Hague, Netherlands
-        </p>
-
-        {/* Name */}
-        <h1 
-          className={`text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-none tracking-tight transition-all duration-700 ${
-            heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "300ms" }}
-        >
-          <span className="bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text text-transparent">
-            Ardjun
-          </span>
-          <br />
-          <span className="bg-gradient-to-b from-foreground to-foreground/60 bg-clip-text text-transparent">
-            Debi Tewarie
-          </span>
-        </h1>
-
-        {/* Typewriter role */}
-        <p 
-          className={`text-lg text-muted-foreground mb-10 h-7 transition-all duration-700 ${
-            heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "400ms" }}
-        >
-          <Typewriter phrases={PHRASES} />
-        </p>
-
-        {/* CTA buttons */}
-        <div 
-          className={`flex flex-wrap items-center justify-center gap-4 transition-all duration-700 ${
-            heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "500ms" }}
-        >
-          <a
-            href="#projects"
-            data-interactive
-            className="px-8 py-4 rounded-full text-sm font-medium text-primary-foreground bg-gradient-to-r from-violet-600 to-pink-600 hover:shadow-lg hover:shadow-violet-600/30 hover:-translate-y-1 hover:scale-105 active:scale-95 transition-all duration-300"
-          >
-            View my work
-          </a>
-          <a
-            href="#contact"
-            data-interactive
-            className="px-8 py-4 rounded-full text-sm font-medium glass hover:bg-white/10 hover:-translate-y-1 hover:scale-105 active:scale-95 transition-all duration-300"
-          >
-            Get in touch
-          </a>
-        </div>
-
-        {/* Scroll indicator */}
-        <div 
-          className={`absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground/50 transition-all duration-700 ${
-            heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-          style={{ transitionDelay: "700ms" }}
-        >
-          <span className="text-[10px] tracking-[4px] uppercase">scroll</span>
-          <ChevronDown className="w-4 h-4 animate-bounce" />
-        </div>
       </section>
 
-      {/* About Section */}
-      <section id="about" className="relative z-10 py-24 px-4">
-        <div className="mx-auto max-w-4xl w-full">
-          <FadeIn>
-            <span className="text-[11px] tracking-[4px] uppercase text-muted-foreground/50 mb-4 block">
-              About me
-            </span>
-          </FadeIn>
-          <FadeIn delay={100}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Who I Am</h2>
-          </FadeIn>
-          
-          <div className="space-y-6 text-muted-foreground leading-relaxed">
-            <FadeIn delay={200}>
-              <p className="text-lg">
-                Hi, I&apos;m <strong className="text-foreground">Ardjun Debi-Tewarie</strong>, a 19-year-old Full Stack Developer 
-                based in <strong className="text-foreground">The Hague, Netherlands</strong>.
-              </p>
-            </FadeIn>
-            
-            <FadeIn delay={300}>
-              <p>
-                I&apos;m currently studying <strong className="text-foreground">Applied Data Science &amp; Artificial Intelligence</strong> at 
-                The Hague University of Applied Sciences (2025-2029). My studies focus on Machine Learning, AI, and Deep Learning - 
-                building the foundation to create intelligent, data-driven systems.
-              </p>
-            </FadeIn>
-            
-            <FadeIn delay={400}>
-              <p>
-                Alongside my studies, I worked as a <strong className="text-foreground">Software Developer at Buro CITE</strong>, 
-                a civil engineering company where I built and maintained web applications. I took projects from concept to deployment, 
-                ensuring they were functional, scalable, and efficient. I used Docker and WordPress, and learned to document my work 
-                professionally. I also developed strong communication skills through meetings, learned how to present my ideas effectively, 
-                and took full ownership of my projects with proper documentation and proof of work.
-              </p>
-            </FadeIn>
-
-            <FadeIn delay={500}>
-              <p>
-                I&apos;m a collaborative problem-solver committed to delivering high-quality, innovative solutions. 
-                I&apos;m eager to apply my development skills today while building the intelligent applications of tomorrow.
-              </p>
-            </FadeIn>
+      <section
+        id="story"
+        data-reel-section
+        data-index="1"
+        className="reel-section flex min-h-screen items-center px-4 py-24"
+      >
+        <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[0.72fr_1fr]">
+          <div>
+            <p className="kicker">The story</p>
+            <h2 className="section-title">Developer with an AI track.</h2>
           </div>
-
-          {/* Quick stats */}
-          <FadeIn delay={600}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
-              {[
-                { value: <AnimatedCounter target={7} suffix="+ mo" />, label: "Work Experience" },
-                { value: <AnimatedCounter target={3} suffix="+" />, label: "Live Projects" },
-                { value: <AnimatedCounter target={6} suffix="" />, label: "Certifications" },
-                { value: <span className="gradient-text">Y1</span>, label: "DS & AI Student" },
-              ].map((stat, i) => (
-                <div 
-                  key={i} 
-                  className="p-4 rounded-xl border border-white/10 bg-white/[0.02] text-center hover:border-primary/30 hover:bg-primary/[0.02] transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="text-2xl font-bold">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{stat.label}</div>
+          <div className="grid gap-4">
+            {MOMENTS.map((moment) => (
+              <article key={moment.title} className="reel-row">
+                <div className="grid size-12 place-items-center rounded-full bg-white text-[#080908]">
+                  <moment.icon className="size-6" />
                 </div>
-              ))}
-            </div>
-          </FadeIn>
-
-          {/* Social links */}
-          <FadeIn delay={700}>
-            <div className="flex flex-wrap gap-3 mt-8">
-              {[
-                { href: "https://github.com/Ardjun6", icon: Github, label: "GitHub" },
-                { href: "https://www.linkedin.com/in/ardjun-debi-tewarie-05340b2a9/", icon: Linkedin, label: "LinkedIn" },
-                { href: "https://ardjun6.nl", icon: Globe, label: "ardjun6.nl" },
-              ].map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-interactive
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-full border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/20 hover:scale-105 active:scale-95 transition-all duration-200"
-                >
-                  <social.icon className="w-4 h-4" />
-                  {social.label}
-                </a>
-              ))}
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* Experience & Education Section */}
-      <section id="experience" className="relative z-10 py-24 px-4">
-        <div className="mx-auto max-w-4xl w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Experience */}
-            <FadeIn direction="left">
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Briefcase className="w-5 h-5 text-primary" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.18em] text-white/45">
+                    <span>{moment.label}</span>
+                    <span>{moment.meta}</span>
                   </div>
-                  <div>
-                    <span className="text-[11px] tracking-[4px] uppercase text-muted-foreground/50 block">Career</span>
-                    <h2 className="text-xl font-bold">Experience</h2>
-                  </div>
+                  <h3 className="mt-1 text-xl font-black">{moment.title}</h3>
+                  <p className="mt-1 text-sm leading-6 text-white/65">{moment.detail}</p>
                 </div>
-
-                <div className="space-y-4">
-                  <div className="p-5 rounded-xl border border-white/10 bg-white/[0.02] hover:border-primary/30 hover:bg-primary/[0.02] transition-all duration-300 hover:-translate-y-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold">Software Developer</h3>
-                      <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-white/5">2025</span>
-                    </div>
-                    <p className="text-sm text-primary mb-2">Buro CITE - Civil Engineering</p>
-                    <p className="text-sm text-muted-foreground">
-                      Building and maintaining web applications for a civil engineering company. 
-                      Working on user experience improvements and internal tools.
-                    </p>
-                    <p className="text-xs text-muted-foreground/60 mt-2">The Hague, Netherlands</p>
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-
-            {/* Education */}
-            <FadeIn direction="right" delay={200}>
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
-                    <GraduationCap className="w-5 h-5 text-accent" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] tracking-[4px] uppercase text-muted-foreground/50 block">Learning</span>
-                    <h2 className="text-xl font-bold">Education</h2>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-5 rounded-xl border border-white/10 bg-white/[0.02] hover:border-accent/30 hover:bg-accent/[0.02] transition-all duration-300 hover:-translate-y-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold">Applied Data Science &amp; AI</h3>
-                      <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-white/5">2025-2029</span>
-                    </div>
-                    <p className="text-sm text-primary mb-2">The Hague University of Applied Sciences</p>
-                    <p className="text-sm text-muted-foreground">
-                      Bachelor of Applied Science focusing on Machine Learning, Artificial Intelligence, 
-                      Data Science, and Deep Learning.
-                    </p>
-                  </div>
-
-                  <div className="p-5 rounded-xl border border-white/10 bg-white/[0.02] hover:border-accent/30 hover:bg-accent/[0.02] transition-all duration-300 hover:-translate-y-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold">Media Development</h3>
-                      <span className="text-xs text-muted-foreground px-2 py-1 rounded-full bg-white/5">2022-2025</span>
-                    </div>
-                    <p className="text-sm text-primary mb-2">Grafisch Lyceum Rotterdam</p>
-                    <p className="text-sm text-muted-foreground">
-                      MBO education in creative and digital media development.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-          </div>
-
-          {/* Certifications */}
-          <FadeIn delay={400}>
-            <div className="mt-12">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
-                  <Award className="w-5 h-5 text-green-400" />
-                </div>
-                <div>
-                  <span className="text-[11px] tracking-[4px] uppercase text-muted-foreground/50 block">Verified</span>
-                  <h2 className="text-xl font-bold">Certifications</h2>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {CERTIFICATIONS.map((cert, i) => (
-                  <span
-                    key={cert}
-                    className="px-4 py-2 text-sm rounded-full border border-green-500/20 bg-green-500/5 text-green-400 hover:bg-green-500/10 hover:border-green-500/30 hover:scale-105 active:scale-95 transition-all duration-200 cursor-default"
-                    style={{ animationDelay: `${i * 100}ms` }}
-                  >
-                    {cert}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section id="skills" className="relative z-10 py-24 px-4">
-        <div className="mx-auto max-w-4xl w-full">
-          <FadeIn>
-            <span className="text-[11px] tracking-[4px] uppercase text-muted-foreground/50 mb-4 block">
-              What I work with
-            </span>
-          </FadeIn>
-          <FadeIn delay={100}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Skills &amp; Tools</h2>
-          </FadeIn>
-          
-          <FadeIn delay={200}>
-            <SkillConstellation />
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* Projects Section */}
-      <section id="projects" className="relative z-10 py-24 px-4">
-        <div className="mx-auto max-w-4xl w-full">
-          <FadeIn>
-            <span className="text-[11px] tracking-[4px] uppercase text-muted-foreground/50 mb-4 block">
-              What I&apos;ve shipped
-            </span>
-          </FadeIn>
-          <FadeIn delay={100}>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Projects</h2>
-          </FadeIn>
-
-          <div className="space-y-6">
-            {PROJECTS.map((project, i) => (
-              <FadeIn key={project.id} delay={i * 150 + 200}>
-                <div className="group p-6 rounded-xl border border-white/10 bg-white/[0.02] hover:border-primary/30 hover:bg-primary/[0.02] transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex flex-col md:flex-row md:items-start gap-4">
-                    {/* Icon */}
-                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-lg font-bold text-primary shrink-0 group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
-                      {project.icon}
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors duration-300">{project.name}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-3 py-1 text-xs rounded-full bg-white/5 border border-white/10 text-muted-foreground group-hover:border-white/20 transition-colors duration-300"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="flex gap-3">
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          data-interactive
-                          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-primary/10 text-primary hover:bg-primary/20 hover:scale-105 active:scale-95 transition-all duration-200"
-                        >
-                          Live Site
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          data-interactive
-                          className="inline-flex items-center gap-2 px-4 py-2 text-sm rounded-full border border-white/10 hover:border-white/20 hover:bg-white/[0.02] hover:scale-105 active:scale-95 transition-all duration-200"
-                        >
-                          <Github className="w-4 h-4" />
-                          Code
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </FadeIn>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="relative z-10 py-24 px-4">
-        <div className="mx-auto max-w-xl w-full">
-          <FadeIn>
-            <div className="p-10 rounded-2xl border border-white/10 bg-white/[0.02] text-center">
-              <span className="text-[11px] tracking-[4px] uppercase text-muted-foreground/50 mb-4 block">
-                Let&apos;s connect
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Let&apos;s build something together
-              </h2>
-              <p className="text-muted-foreground mb-8">
-                Open to freelance work, collaborations, and interesting projects.
-              </p>
-
-              <div className="space-y-3">
-                <a
-                  href="mailto:ardjundebitewarie@outlook.com"
-                  data-interactive
-                  className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:border-primary/30 hover:bg-primary/[0.02] hover:-translate-y-1 transition-all duration-300 text-left group"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Mail className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-0.5">Email</div>
-                    <div className="text-sm font-medium">ardjundebitewarie@outlook.com</div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground/30 group-hover:text-muted-foreground group-hover:translate-x-1 transition-all duration-300" />
-                </a>
-
-                <a
-                  href="https://github.com/Ardjun6"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-interactive
-                  className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04] hover:-translate-y-1 transition-all duration-300 text-left group"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Github className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-0.5">GitHub</div>
-                    <div className="text-sm font-medium">github.com/Ardjun6</div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground/30 group-hover:text-muted-foreground group-hover:translate-x-1 transition-all duration-300" />
-                </a>
-
-                <a
-                  href="https://www.linkedin.com/in/ardjun-debi-tewarie-05340b2a9/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-interactive
-                  className="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:border-blue-500/30 hover:bg-blue-500/[0.02] hover:-translate-y-1 transition-all duration-300 text-left group"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <Linkedin className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-0.5">LinkedIn</div>
-                    <div className="text-sm font-medium">Ardjun Debi - Tewarie</div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground/30 group-hover:text-muted-foreground group-hover:translate-x-1 transition-all duration-300" />
-                </a>
-              </div>
+      <section
+        id="work"
+        data-reel-section
+        data-index="2"
+        className="reel-section flex min-h-screen items-center px-4 py-24"
+      >
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
+            <div>
+              <p className="kicker">Selected work</p>
+              <h2 className="section-title">Live projects with motion.</h2>
             </div>
-          </FadeIn>
+            <a
+              href="https://github.com/Ardjun6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="reel-button w-fit border border-white/15 bg-white/10"
+              data-interactive
+            >
+              <Github className="size-4" />
+              GitHub
+            </a>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-3">
+            {PROJECTS.map((project, index) => (
+              <a
+                key={project.name}
+                href={project.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="project-tile group"
+                data-interactive
+              >
+                <div className={`project-shine bg-gradient-to-br ${project.accent}`} />
+                <div className="relative z-10 flex h-full flex-col justify-between">
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="text-sm font-black text-black/50">0{index + 1}</span>
+                    <ArrowUpRight className="size-6 text-black/60 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-black text-[#080908]">{project.name}</h3>
+                    <p className="mt-3 text-sm leading-6 text-black/70">{project.line}</p>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <span key={tag} className="rounded-full bg-black/10 px-3 py-1 text-xs font-bold text-black/70">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <FadeIn>
-        <footer className="relative z-10 text-center py-8 border-t border-white/5">
-          <p className="text-xs text-muted-foreground/40 tracking-wide">
-            2025 Ardjun Debi Tewarie — Crafted with care in The Hague, Netherlands
-          </p>
-        </footer>
-      </FadeIn>
-    </div>
+      <section
+        id="stack"
+        data-reel-section
+        data-index="3"
+        className="reel-section flex min-h-screen items-center px-4 py-24"
+      >
+        <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[0.95fr_1fr]">
+          <div>
+            <p className="kicker">Stack</p>
+            <h2 className="section-title">Code, data, deployment.</h2>
+            <p className="mt-6 max-w-xl text-lg leading-8 text-white/65">
+              I connect frontend craft with pragmatic deployment and a growing AI/data science
+              foundation.
+            </p>
+          </div>
+          <div className="skill-marquee" aria-label="Skills">
+            {SKILLS.map((skill, index) => (
+              <span key={skill} className={index % 3 === 0 ? "is-hot" : index % 3 === 1 ? "is-cool" : ""}>
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="contact"
+        data-reel-section
+        data-index="4"
+        className="reel-section flex min-h-screen items-center px-4 py-24"
+      >
+        <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[1fr_0.8fr]">
+          <div>
+            <p className="kicker">Contact</p>
+            <h2 className="section-title">Have a project? Send it.</h2>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/70">
+              Open to freelance websites, business tools, collaborations, and internships where
+              development meets data and AI.
+            </p>
+          </div>
+          <div className="contact-stack">
+            <a href="mailto:ardjundebitewarie@outlook.com" className="contact-link" data-interactive>
+              <Mail className="size-5" />
+              <span>ardjundebitewarie@outlook.com</span>
+              <ArrowUpRight className="ml-auto size-5" />
+            </a>
+            <a
+              href="https://www.linkedin.com/in/ardjun-debi-tewarie-05340b2a9/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-link"
+              data-interactive
+            >
+              <Linkedin className="size-5" />
+              <span>LinkedIn</span>
+              <ArrowUpRight className="ml-auto size-5" />
+            </a>
+            <a
+              href="https://github.com/Ardjun6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-link"
+              data-interactive
+            >
+              <Github className="size-5" />
+              <span>GitHub</span>
+              <ArrowUpRight className="ml-auto size-5" />
+            </a>
+            <div className="mt-4 flex items-center gap-3 text-sm text-white/45">
+              <Layers3 className="size-4" />
+              <span>{year} Ardjun Debi Tewarie</span>
+              <Code2 className="size-4" />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   )
 }
